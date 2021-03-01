@@ -8,3 +8,4 @@ total_1 = np.linalg.matrix_power(p,n)
 print('1')
 print(total_1)
 print("commit")
+

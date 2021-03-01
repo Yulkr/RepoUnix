@@ -9,3 +9,6 @@ print('1')
 print(total_1)
 print("commit")
 
+
+#3
+def multiply_m(a, b):

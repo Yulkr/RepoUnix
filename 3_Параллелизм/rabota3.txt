@@ -1,0 +1,53 @@
+from multiprocessing import Pool
+
+
+class Matrix(object):
+
+    def __init__(self, A: list = None, B: list = None, A_file_: str = None, B_file_: str = None):
+        """
+        Конструктор
+        """
+
+        self.A = (list() if A_file_ is None else self.file_open(file_name=A_file_)) if A is None else A
+        self.B = (list() if B_file_ is None else self.file_open(file_name=B_file_)) if B is None else B
+        self.__C = list()
+
+    def matrix_multiply(self, max_processes: int = None, file_name: str = None) -> list:
+        """
+        Перемножает элементы матрицы используя пул процессов
+
+        """
+
+        self.__C = [[0 for _ in range(len(self.A))] for _ in range(len(self.A))]
+        with Pool(processes=max_processes) as pool:
+            self.__C = [pool.starmap(self._element, [(i, j) for j in range(len(self.A))]) for i in range(len(self.A))]
+        return self.matrix_save("C.txt" if file_name is None else file_name, self.__C)
+
+    def _element(self, i: int, j: int) -> int:
+        """
+        Вычисляет значение элемента матрицы
+        """
+
+        return sum(self.A[i][k] * self.B[k][j] for k in range(len(self.A[0]) or len(self.B)))
+
+    @staticmethod
+    def file_open(file_name: str) -> list:
+
+
+        with open(file_name) as file_m:
+            return [[int(i) for i in line.rstrip().split(" ")] for line in file_m]
+
+    @staticmethod
+    def matrix_save(file_name: str, matrix: list) -> list:
+        """
+        Сохраняет матрицу в файл
+        """
+
+        with open(file_name, "w") as file_m:
+            print("\n".join([" ".join(map(str, line)) for line in matrix]), file=file_m)
+        return matrix
+
+
+if __name__ == '__main__':
+    matrix = Matrix(A_file_="1.txt", B_file_="2.txt").matrix_multiply()
+    print(matrix)
